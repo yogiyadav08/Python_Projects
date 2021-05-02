@@ -112,6 +112,9 @@ time.sleep(1)
 
 tickers = ["ADANIPORTS", "ASIANPAINT", "AXISBANK", "BAJAJ-AUTO", "BAJFINANCE", "BAJAJFINSV", "BPCL", "BHARTIARTL", "BRITANNIA", "CIPLA", "COALINDIA", "DIVISLAB","DRREDDY", "EICHERMOT","GRASIM", "HCLTECH", "HDFCBANK", "HDFCLIFE", "HEROMOTOCO","HINDALCO","HINDUNILVR","HDFC","ICICIBANK","ITC","IOC","INDUSINDBK", "INFY","JSWSTEEL","KOTAKBANK","LT","M&M","MARUTI","NTPC","NESTLEIND","ONGC","POWERGRID", "RELIANCE","SBILIFE","SHREECEM","SBIN", "SUNPHARMA","TCS", "TATACONSUM", "TATAMOTORS", "TATASTEEL", "TECHM", "TITAN", "UPL","ULTRACEMCO", "WIPRO"]
 
+pairs = list(itertools.permutations(tickers, 2))
+
+
 #extracting historical data
 for ticker in tickers:
     app.histData(tickers.index(ticker), USStock(ticker), "1 M", "5 mins")
@@ -124,13 +127,10 @@ def dataDataframe(symbols, obj):
         df_data[symbol].set_index("Date", inplace=True)
     return df_data
 
-pairs = {}
+
 
 def generate_pairs(self):
-    for i in range(len(tickers)):
-        for j in range(i+1,len(tickers)):
-            self.pair_list.append(pairs(self.symbols[i],self.symbols[j]))
-
+    
     self.pair_list = [x for x in self.pair_list if x.cor > self.pair_threshod]
 
     self.pair_list.sort(key = lambda x: x.cor, reverse = True)
