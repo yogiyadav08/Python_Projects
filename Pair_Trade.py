@@ -129,15 +129,22 @@ def dataDataframe(symbols, obj):
 
 
 
-def generate_pairs(self):
+def generate_pairs(data):
+    pairs = {}
+    for i in range(len(data)):
+        for j in range(i+1, len(data)):
+            ratio = data[i]['Close'] / data[j]['Close']
+            if adfuller(ratio) < 0.05:
+                pairs['pair'] = pd.DataFrame((data[i], data[j]))
+                pairs['ratio'] = pd.DataFrame(ratio)
+                pairs.index = pd.to_datetime(pairs.index)
+     return pairs
     
-    self.pair_list = [x for x in self.pair_list if x.cor > self.pair_threshod]
+pairs['mavg'] = pairs.ratio.rolling(window=32).mean()  
 
-    self.pair_list.sort(key = lambda x: x.cor, reverse = True)
+pairs['std'] = pairs.ratio.rolling(window=32).std()
 
-    if len(self.pair_list) > self.pair_num:
-        self.pair_list = self.pair_list[:self.pair_num]
-
+z_score = (pairs.ratio - pairs.mavg)/pairs.std
 
 Timer(5, app.stop).start()
 
