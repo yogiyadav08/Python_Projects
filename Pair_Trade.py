@@ -139,6 +139,32 @@ def generate_pairs(data):
                 pairs['ratio'] = pd.DataFrame(ratio)
                 pairs.index = pd.to_datetime(pairs.index)
      return pairs
+
+
+import pandas as pd
+
+
+
+list = {'ONE': {'Date': 20200520, 'Open': 10, 'High': 13, 'Low': 9, 'Close': 12}, 
+'TWO': {'Date': 20200520, 'Open': 11, 'High': 15, 'Low': 10, 'Close': 13},
+'THREE': {'Date': 20200520, 'Open': 15, 'High': 18, 'Low': 14, 'Close': 17}, 
+'FOUR': {'Date': 20200520, 'Open': 20, 'High': 22, 'Low': 17, 'Close': 18}}
+
+
+
+
+def generate_pairs(data):
+    pairs = {}
+    for i in range(len(data)):
+        for j in range(i+1, len(data)):
+            ratio = data[i]['Close'] / data[j]['Close']
+        if adfuller(ratio) < 0.05:
+            pairs['pair'] = pd.DataFrame((data[i], data[j]))
+            pairs['ratio'] = pd.DataFrame(ratio)
+	return pairs
+     
+
+generate_pairs(list)# cook your dish here
     
 pairs['mavg'] = pairs.ratio.rolling(window=32).mean()  
 
