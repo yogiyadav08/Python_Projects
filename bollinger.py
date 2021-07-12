@@ -5,9 +5,20 @@ from ibapi.order import Order
 from threading import Timer
 import time
 
+symbols = ['TATASTEEL', 'MARUTI', 'WIPRO', 'HDFCBANK', 'SHREECEM', 'SBIN', 'IOC', 'UPL']
+
 class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
+        
+        self.prices = deque(maxlen = BOLLINGER_PERIOD)
+        self.moneyflows = deque(maxlen = MFI_PERIOD)
+        
+    
+    def historicalData(self, reqId, bar):
+        # Append the closing prices to the deque
+        self.prices.append(bar.close)
+        
 
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
@@ -79,9 +90,26 @@ def USStock(ticker: str):
 def main():
     app = TestApp()
     app.connect("127.0.0.1", 4002, 1)
-
-    Timer(5, app.stop).start()
-    app.run()
+    
+    
+    # Initialize values
+    old_typical = -1
+    prices.clear()
+    money_flows.clear()
+    funds = init_funds
+    inv_state = InvState.OUT
+    positions.clear()
+    
+    
+   #Contract specific information
+    contract_size = 
+    unit_size = int(0.01 * funds / contract_size)
+    df = 
+    
+    for symbol in symbols:
+        
+        #Compute the money flow
+        typical = () / 3
 
 if __name__ == "__main__":
     main()
