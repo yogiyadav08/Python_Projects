@@ -11,13 +11,48 @@ class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
         
-        self.prices = deque(maxlen = BOLLINGER_PERIOD)
+        self.prices = deque(maxlen = AVG_LENGTH)
         self.moneyflows = deque(maxlen = MFI_PERIOD)
         
     
     def historicalData(self, reqId, bar):
         # Append the closing prices to the deque
         self.prices.append(bar.close)
+        
+        # Bollinger Band 
+        # Compute the average if 100 values are available
+        if len(self.prices) == AVG_LENGTH:
+            avg = sum(self.prices) / len(self.prices)
+            
+            # Compute the standard deviation
+            avg_array = np.array(self.prices)
+            sigma = np.std(avg_array)
+            
+            # Update the containers
+            self.avg_vals.append(avg)
+            self.upper_band.append(avg + 2 * sigma)
+            self.lower_band.append(avg - 2 * sigma)
+            self.pct_b.append(((bar.close - avg + 2 * sigma) / (4 * sigma)) * 100)
+            
+        # MFI
+        # Compute the money flow
+        typical = (bar.close + bar.low + bar.close) / 3
+        if old_typical > typical:
+            old_typical = typical
+            typical *= -1
+        else:
+            old_typical = typical
+        
+        money_flow = (bar.volume) * typical
+        self.money_flows.append(money_flow)
+        if len(self.money_flows) == MFI_PERIOD:
+            mf_array = np.array(self.money_flows)
+            pos_flow = np.sum(mf_array[mf_array > 0])
+            neg_flow = -1.0 * np.sum(mf_array[mf_array < 0])
+            mfi = 100 * pos_flow / (pos_flow + neg_flow)
+        else:
+            continue
+        self.mfi_val.append(mfi)
         
 
     def error(self, reqId, errorCode, errorString):
