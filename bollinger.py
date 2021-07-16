@@ -127,24 +127,18 @@ def main():
     app.connect("127.0.0.1", 4002, 1)
     
     
-    # Initialize values
-    old_typical = -1
-    prices.clear()
-    money_flows.clear()
-    funds = init_funds
-    inv_state = InvState.OUT
-    positions.clear()
+   
     
-    
-   #Contract specific information
-    contract_size = 
-    unit_size = int(0.01 * funds / contract_size)
-    df = 
-    
-    for symbol in symbols:
+  
+    for symbol in symbols: 
+        unit_size = int(0.01 * app.buy_power / app.hist_data[symbol][-1]['Close'])
         
-        #Compute the money flow
-        typical = () / 3
+        
+        
+    
+    
+    
+    
 
 if __name__ == "__main__":
     main()
