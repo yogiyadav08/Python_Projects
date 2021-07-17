@@ -13,6 +13,7 @@ class TestApp(EWrapper, EClient):
         
         self.prices = deque(maxlen = AVG_LENGTH)
         self.moneyflows = deque(maxlen = MFI_PERIOD)
+        self.order_df = pd.DataFrame()
         
     
     def historicalData(self, reqId, bar):
@@ -80,47 +81,9 @@ class TestApp(EWrapper, EClient):
         print("ExecDetails. ", reqId, contract.symbol, contract.secType, contract.currency, execution.execId,
               execution.orderId, execution.shares, execution.lastLiquidity)
 
-    def start(self):
-        dpzStock = USStock("DPZ")
-        dpzOrder = RelativePeggedToPrimary("BUY", 1, 0, 0)
-        dpzOrder.transmit = False
-        dpzOrderId = self.nextOrderId()
-        self.placeOrder(dpzOrderId, dpzStock, dpzOrder)
-        time.sleep(0.2) #planned to be no longer necessary in future
 
-        # Pair trading documentation: http://interactivebrokers.github.io/tws-api/hedging.html
-        pzzaStock = USStock("PZZA")
-        # Size is 0 for hedge orders because it is calculated using the ratio
-        pzzaOrder = RelativePeggedToPrimary("SELL", 0, 0, 0)
-        pzzaOrder.parentId = dpzOrderId  # parent ID links child to parent order
-        pzzaOrder.hedgeType = "P"  # "P" stands for Pair Trade
-        pzzaOrder.hedgeParam = "5"  # 5 is the hedging ratio
 
-        self.placeOrder(self.nextOrderId(), pzzaStock, pzzaOrder)
-
-    def stop(self):
-        self.done = True
-        self.disconnect()
-
-# The REL order type is adjusted by the system automatically with the bid (for Buy) or ask (for Sell ) orders
-def RelativePeggedToPrimary(action: str, quantity: float, priceCap: float, offsetAmount: float):
-    order = Order()
-    order.action = action
-    order.orderType = "REL"
-    order.totalQuantity = quantity
-    order.lmtPrice = priceCap
-    order.auxPrice = offsetAmount
-    return order
-
-# API contract definition documentation: http://interactivebrokers.github.io/tws-api/basic_contracts.html#stk
-def USStock(ticker: str):
-    contract = Contract()
-    contract.symbol = ticker
-    contract.secType = "STK"
-    contract.exchange = "SMART"
-    contract.currency = "USD"
-    contract.primaryExchange = "NYSE"  # Should be native exchange of stock
-    return contract
+        
 
 def main():
     app = TestApp()
@@ -132,6 +95,9 @@ def main():
   
     for symbol in symbols: 
         unit_size = int(0.01 * app.buy_power / app.hist_data[symbol][-1]['Close'])
+        
+     
+        
         
         
         
